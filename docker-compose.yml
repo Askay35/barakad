@@ -1,0 +1,51 @@
+services:
+
+  barakad-mysql:
+    image: mysql:8
+    container_name: barakad-mysql
+    env_file:
+      - .env
+    environment:
+      MYSQL_DATABASE: ${DB_DATABASE:-db}
+      MYSQL_USER: ${DB_USERNAME:-guest}
+      MYSQL_PASSWORD: ${DB_PASSWORD:-guest}
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD:-guest}
+    ports:
+      - "${DB_PORT:-3306}:3306"
+    volumes:
+      - barakad-mysql-data:/var/lib/mysql
+    networks:
+      - barakad-network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${DB_PASSWORD:-guest}"]
+      interval: 10s
+      timeout: 10s
+      retries: 3
+    
+  barakad:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: barakad
+    working_dir: /var/www/html
+    volumes:
+      - .:/var/www/html
+    ports:
+      - "${APP_PORT:-8000}:8000"
+    depends_on:
+      barakad-mysql:
+        condition: service_healthy
+    networks:
+      - barakad-network
+    env_file:
+      - .env
+    command: sh -c "php artisan config:clear && php artisan cache:clear && php artisan migrate:fresh --seed && php artisan serve --host=0.0.0.0 --port=8000"
+  
+
+networks:
+  barakad-network:
+    driver: bridge
+
+volumes:
+  barakad-mysql-data:
+    driver: local
