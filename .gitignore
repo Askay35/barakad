@@ -39,3 +39,4 @@ deploy.sh
 stop.sh
 logs.sh
 setup-ssh-deploy.sh
+.github
