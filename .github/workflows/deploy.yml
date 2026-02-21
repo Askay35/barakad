@@ -67,7 +67,9 @@ jobs:
             docker-compose -f docker-compose.yml -f docker-compose.prod.yml pull barakad-nginx 2>/dev/null || true && \
             docker-compose -f docker-compose.yml -f docker-compose.prod.yml build barakad && \
             docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d && \
-            sleep 5 && \
+            echo 'Waiting for containers to be healthy...' && \
+            sleep 15 && \
+            docker-compose -f docker-compose.yml -f docker-compose.prod.yml ps && \
             docker-compose -f docker-compose.yml -f docker-compose.prod.yml exec -T barakad php artisan migrate --force 2>/dev/null || true && \
             docker-compose -f docker-compose.yml -f docker-compose.prod.yml exec -T barakad php artisan storage:link 2>/dev/null || true"
       
@@ -75,9 +77,15 @@ jobs:
         env:
           SERVER_USER: ${{ secrets.SERVER_USER }}
           SERVER_HOST: ${{ secrets.SERVER_HOST }}
+          SERVER_PATH: ${{ secrets.SERVER_PATH }}
         run: |
           echo "Waiting for services to start..."
-          sleep 10
-          curl -f http://$SERVER_HOST || exit 1
+          sleep 20
+          echo "Checking container status..."
+          ssh $SERVER_USER@$SERVER_HOST "cd $SERVER_PATH && docker-compose -f docker-compose.yml -f docker-compose.prod.yml ps"
+          echo "Checking PHP-FPM connection..."
+          ssh $SERVER_USER@$SERVER_HOST "cd $SERVER_PATH && docker-compose -f docker-compose.yml -f docker-compose.prod.yml exec -T barakad sh -c 'nc -zv localhost 9000 && echo \"PHP-FPM is listening\"' || echo \"PHP-FPM check skipped\""
+          echo "Testing HTTP endpoint..."
+          curl -f --max-time 30 http://$SERVER_HOST || (echo "Health check failed. Checking logs..." && ssh $SERVER_USER@$SERVER_HOST "cd $SERVER_PATH && docker-compose -f docker-compose.yml -f docker-compose.prod.yml logs --tail=50 barakad barakad-nginx" && exit 1)
           echo "Deployment successful!"
 

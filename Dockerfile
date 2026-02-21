@@ -5,6 +5,7 @@ WORKDIR /var/www/html
 RUN apk add --no-cache \
     mysql-client \
     linux-headers \
+    netcat-openbsd \
     $PHPIZE_DEPS \
     && docker-php-ext-install pdo pdo_mysql \
     && apk del $PHPIZE_DEPS
@@ -35,6 +36,9 @@ RUN php artisan cache:clear || true
 CMD php artisan migrate:fresh --seed --force && php artisan serve --host=0.0.0.0 --port=9000
 
 FROM base as production
+
+# Copy PHP-FPM configuration to listen on all interfaces (after COPY . . to override if needed)
+COPY php-fpm.conf /usr/local/etc/php-fpm.d/www.conf
 
 # Create storage directories for images
 RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache \

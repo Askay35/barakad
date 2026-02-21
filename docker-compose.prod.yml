@@ -10,6 +10,12 @@ services:
       - barakad-network
     env_file:
       - .env
+    healthcheck:
+      test: ["CMD-SHELL", "nc -z localhost 9000 || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
 
   barakad-nginx:
     image: nginx:alpine
