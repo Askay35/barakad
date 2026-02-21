@@ -47,15 +47,18 @@ Thumbs.db
 .phpunit.result.cache
 /tests
 
-# Docker
+# Docker files (exclude from image, but keep for build context)
+# Note: Dockerfile is needed for build but not in final image
 docker-compose.yml
 docker-compose.override.yml
 Dockerfile
 .dockerignore
+# Keep: docker-compose.prod.yml and nginx.conf - needed for deployment via volumes
 
 # Documentation
 README.md
-*.md
+# Keep deployment docs for reference (optional)
+# *.md
 
 # Logs
 *.log
