@@ -39,6 +39,7 @@ jobs:
             --exclude 'node_modules' \
             --exclude 'vendor' \
             --exclude '.env' \
+            --exclude '.env.production' \
             --exclude '.env.local' \
             --exclude 'storage/logs/*' \
             --exclude 'storage/framework/cache/*' \
@@ -59,7 +60,7 @@ jobs:
           
           # Set proper permissions
           ssh $SERVER_USER@$SERVER_HOST "cd $SERVER_PATH && \
-            chmod -R 775 storage bootstrap/cache 2>/dev/null || true
+            chmod -R 775 storage bootstrap/cache 2>/dev/null || true"
           
           # Build and start containers
           ssh $SERVER_USER@$SERVER_HOST "cd $SERVER_PATH && \

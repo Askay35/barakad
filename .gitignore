@@ -39,4 +39,6 @@ deploy.sh
 stop.sh
 logs.sh
 setup-ssh-deploy.sh
-.github
+.github/SSH_SETUP.md
+.github/QUICK_START.md
+.github/DEPLOY.md
