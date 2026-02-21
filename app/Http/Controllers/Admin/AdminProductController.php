@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Category;
 use App\Models\Product;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class AdminProductController extends Controller
 {
@@ -39,9 +40,9 @@ class AdminProductController extends Controller
 
         if ($request->hasFile('image')) {
             $image = $request->file('image');
-            $imageName = time() . '.' . $image->getClientOriginalExtension();
-            $image->move(public_path('images'), $imageName);
-            $validated['image'] = '/images/' . $imageName;
+            $imageName = 'products/' . time() . '_' . uniqid() . '.' . $image->getClientOriginalExtension();
+            $path = $image->storeAs('public/images', $imageName);
+            $validated['image'] = Storage::url('images/' . $imageName);
         }
 
         Product::create($validated);
@@ -60,10 +61,18 @@ class AdminProductController extends Controller
         ]);
 
         if ($request->hasFile('image')) {
+            // Удаляем старое изображение
+            if ($product->image) {
+                $oldImagePath = str_replace('/storage/', '', parse_url($product->image, PHP_URL_PATH));
+                if (Storage::disk('public')->exists($oldImagePath)) {
+                    Storage::disk('public')->delete($oldImagePath);
+                }
+            }
+
             $image = $request->file('image');
-            $imageName = time() . '.' . $image->getClientOriginalExtension();
-            $image->move(public_path('images'), $imageName);
-            $validated['image'] = '/images/' . $imageName;
+            $imageName = 'products/' . time() . '_' . uniqid() . '.' . $image->getClientOriginalExtension();
+            $path = $image->storeAs('public/images', $imageName);
+            $validated['image'] = Storage::url('images/' . $imageName);
         }
 
         $product->update($validated);
@@ -73,6 +82,14 @@ class AdminProductController extends Controller
 
     public function destroy(Product $product)
     {
+        // Удаляем изображение при удалении блюда
+        if ($product->image) {
+            $oldImagePath = str_replace('/storage/', '', parse_url($product->image, PHP_URL_PATH));
+            if (Storage::disk('public')->exists($oldImagePath)) {
+                Storage::disk('public')->delete($oldImagePath);
+            }
+        }
+
         $product->delete();
         return back()->with('success', 'Блюдо удалено.');
     }

@@ -19,7 +19,7 @@
 <div x-show="showCreate" x-cloak x-collapse class="mb-6">
     <div class="bg-white rounded-2xl border border-slate-200 p-6">
         <h3 class="font-bold text-slate-900 mb-4">Новая категория</h3>
-        <form method="POST" action="{{ route('admin.categories.store') }}">
+        <form method="POST" action="{{ route('admin.categories.store') }}" enctype="multipart/form-data">
             @csrf
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
@@ -27,8 +27,8 @@
                     <input type="text" name="name" required class="w-full px-4 py-2.5 border border-slate-200 rounded-xl focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20 outline-none text-sm">
                 </div>
                 <div>
-                    <label class="block text-sm font-medium text-slate-700 mb-1">URL изображения</label>
-                    <input type="text" name="image" class="w-full px-4 py-2.5 border border-slate-200 rounded-xl focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20 outline-none text-sm" placeholder="https://...">
+                    <label class="block text-sm font-medium text-slate-700 mb-1">Изображения</label>
+                    <input type="file" name="image" accept="image/*" class="w-full px-4 py-2.5 border border-slate-200 rounded-xl focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20 outline-none text-sm">
                 </div>
             </div>
             <div class="flex gap-2 mt-4">
@@ -88,7 +88,7 @@
         <!-- Edit Mode -->
         <div x-show="editingId === {{ $category->id }}" x-cloak class="p-5">
             <h3 class="font-bold text-slate-900 mb-3">Редактировать</h3>
-            <form method="POST" action="{{ route('admin.categories.update', $category) }}">
+            <form method="POST" action="{{ route('admin.categories.update', $category) }}" enctype="multipart/form-data">
                 @csrf @method('PUT')
                 <div class="space-y-3">
                     <div>
@@ -96,8 +96,8 @@
                         <input type="text" name="name" value="{{ $category->name }}" required class="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:border-amber-500 outline-none">
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-slate-700 mb-1">URL изображения</label>
-                        <input type="text" name="image" value="{{ $category->image }}" class="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:border-amber-500 outline-none">
+                        <label class="block text-sm font-medium text-slate-700 mb-1">Изображения</label>
+                        <input type="file" name="image" accept="image/*" class="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:border-amber-500 outline-none">
                     </div>
                 </div>
                 <div class="flex gap-2 mt-4">

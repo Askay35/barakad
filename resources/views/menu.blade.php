@@ -1,91 +1,42 @@
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>Barakad — Меню</title>
-    
-    <!-- Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    
-    <!-- TailwindCSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: {
-                        sans: ['Montserrat', 'sans-serif'],
-                    },
-                    colors: {
-                        brand: {
-                            50: '#fef7ee',
-                            100: '#fdedd6',
-                            200: '#fad7ac',
-                            300: '#f6ba77',
-                            400: '#f19340',
-                            500: '#ee751a',
-                            600: '#df5b10',
-                            700: '#b9440f',
-                            800: '#933614',
-                            900: '#772f14',
-                        }
-                    }
-                }
-            }
-        }
-    </script>
-    
-    <!-- Alpine.js -->
-    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
-    
-    <style>
-        [x-cloak] { display: none !important; }
-    </style>
-</head>
-<body class="bg-stone-50 font-sans antialiased" x-data="cartApp()">
-    
-    <!-- Header -->
-    <header class="sticky top-0 z-50 bg-white/80 backdrop-blur-lg border-b border-stone-200">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex items-center justify-between h-16">
+@extends('layouts.guest')
+
+@section('title', 'Меню')
+
+@section('header')
+<header class="sticky top-0 z-50 bg-white/80 backdrop-blur-lg border-b border-stone-200">
+        <div class="max-w-7xl mx-auto px-3 sm:px-4 lg:px-8">
+            <div class="flex items-center justify-between h-16 sm:h-20 gap-2">
                 <!-- Logo -->
-                <a href="{{ route('menu') }}" class="flex items-center gap-3">
-                    <div class="w-10 h-10 bg-gradient-to-br from-brand-500 to-brand-600 rounded-xl flex items-center justify-center">
-                        <svg class="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
-                        </svg>
-                    </div>
-                    <span class="text-xl font-bold text-stone-900">Barakad</span>
+                <a href="{{ route('menu') }}" class="flex items-center gap-2 sm:gap-3 flex-shrink-0">
+                    <img src="{{ asset('storage/images/logo.png') }}" alt="Barakad" class="h-10 sm:h-16 w-auto">
                 </a>
                 
                 <!-- Table Badge -->
-                <span x-show="tableNumber" x-cloak class="px-3 py-1.5 bg-brand-50 text-brand-700 rounded-full text-sm font-semibold flex items-center gap-1.5">
-                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <span x-show="tableNumber" x-cloak class="hidden sm:flex px-2 sm:px-3 py-1 sm:py-1.5 bg-brand-50 text-brand-700 rounded-full text-xs sm:text-sm font-semibold items-center gap-1 sm:gap-1.5 flex-shrink-0">
+                    <svg class="w-3 h-3 sm:w-4 sm:h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M3 14h18m-9-4v8m-7 0h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/>
                     </svg>
-                    Стол <span x-text="tableNumber"></span>
+                    <span class="hidden md:inline">Стол</span> <span x-text="tableNumber"></span>
                 </span>
 
                 <!-- Cart Button -->
                 <a href="{{ route('cart') }}" 
-                   class="relative flex items-center gap-2 bg-brand-500 hover:bg-brand-600 text-white px-4 py-2 rounded-full transition-all duration-200 hover:scale-105 shadow-lg shadow-brand-500/25">
-                    <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                   class="relative flex items-center gap-1 sm:gap-2 bg-brand-500 hover:bg-brand-600 active:bg-brand-700 text-white px-3 sm:px-4 py-2 sm:py-2.5 rounded-full transition-all duration-200 hover:scale-105 active:scale-95 shadow-lg shadow-brand-500/25 min-w-[44px] min-h-[44px] sm:min-w-0 sm:min-h-0">
+                    <svg class="w-5 h-5 sm:w-5 sm:h-5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/>
                     </svg>
-                    <span class="font-semibold" x-text="formatPrice(cartTotal)"></span>
+                    <span class="font-semibold text-sm sm:text-base hidden sm:inline" x-text="formatPrice(cartTotal)"></span>
                     <span x-show="cartCount > 0" x-cloak
-                          class="absolute -top-2 -right-2 w-6 h-6 bg-white text-brand-600 text-xs font-bold rounded-full flex items-center justify-center shadow"
+                          class="absolute -top-1 -right-1 sm:-top-2 sm:-right-2 w-5 h-5 sm:w-6 sm:h-6 bg-white text-brand-600 text-xs font-bold rounded-full flex items-center justify-center shadow text-[10px] sm:text-xs"
                           x-text="cartCount"></span>
                 </a>
             </div>
         </div>
     </header>
+@endsection
 
-    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+@section('content')
+<main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         
         <!-- Hero Section -->
         <section class="text-center mb-12">
@@ -100,29 +51,29 @@
         <!-- Categories Grid -->
         <section class="mb-12">
             <h2 class="text-2xl font-bold text-stone-900 mb-6">Категории</h2>
-            <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
+            <div class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 xl:grid-cols-8 gap-2">
                 <!-- All categories link -->
                 <a href="{{ route('menu', ['sort' => $currentSort]) }}"
-                   class="group relative aspect-square rounded-2xl overflow-hidden bg-gradient-to-br from-stone-800 to-stone-900 transition-all duration-300 hover:scale-105 hover:shadow-xl {{ !$selectedCategoryId ? 'ring-2 ring-brand-500 ring-offset-2' : '' }}">
-                    <div class="absolute inset-0 flex flex-col items-center justify-center p-4">
-                        <div class="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
-                            <svg class="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                   class="group relative aspect-square rounded-xl overflow-hidden bg-gradient-to-br from-stone-800 to-stone-900 transition-all duration-300 hover:scale-105 hover:shadow-lg {{ !$selectedCategoryId ? 'ring-2 ring-brand-500 ring-offset-1' : '' }}">
+                    <div class="absolute inset-0 flex flex-col items-center justify-center p-2">
+                        <div class="w-8 h-8 bg-white/20 rounded-lg flex items-center justify-center mb-2 group-hover:scale-110 transition-transform">
+                            <svg class="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/>
                             </svg>
                         </div>
-                        <span class="text-white font-semibold text-sm text-center">Все</span>
+                        <span class="text-white font-semibold text-xs text-center">Все</span>
                     </div>
                 </a>
                 
                 @foreach($categories as $category)
                 <a href="{{ route('menu', ['category_id' => $category->id, 'sort' => $currentSort]) }}"
-                   class="group relative aspect-square rounded-2xl overflow-hidden transition-all duration-300 hover:scale-105 hover:shadow-xl {{ $selectedCategoryId == $category->id ? 'ring-2 ring-brand-500 ring-offset-2' : '' }}">
+                   class="group relative aspect-square rounded-xl overflow-hidden transition-all duration-300 hover:scale-105 hover:shadow-lg {{ $selectedCategoryId == $category->id ? 'ring-2 ring-brand-500 ring-offset-1' : '' }}">
                     <img src="{{ $category->image }}" 
                          alt="{{ $category->name }}"
                          class="absolute inset-0 w-full h-full object-cover">
                     <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"></div>
-                    <div class="absolute inset-0 flex items-end p-4">
-                        <span class="text-white font-semibold text-sm">{{ $category->name }}</span>
+                    <div class="absolute inset-0 flex items-end p-2">
+                        <span class="text-white font-semibold text-xs">{{ $category->name }}</span>
                     </div>
                 </a>
                 @endforeach
@@ -130,32 +81,35 @@
         </section>
 
         <!-- Filters & Sorting -->
-        <section class="flex flex-wrap items-center justify-between gap-4 mb-8">
+        <section class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4 mb-6 sm:mb-8">
             <div class="flex items-center gap-2">
-                <span class="text-stone-600 text-sm">Найдено:</span>
-                <span class="font-bold text-stone-900">{{ $products->total() }} блюд</span>
+                <span class="text-stone-600 text-xs sm:text-sm">Найдено:</span>
+                <span class="font-bold text-stone-900 text-sm sm:text-base">{{ $products->total() }} блюд</span>
             </div>
             
-            <div class="flex items-center gap-3">
-                <span class="text-stone-600 text-sm hidden sm:inline">Сортировка:</span>
-                <div class="flex bg-white rounded-lg border border-stone-200 p-1">
+            <div class="flex items-center gap-2 sm:gap-3">
+                <span class="text-stone-600 text-xs sm:text-sm hidden sm:inline">Сортировка:</span>
+                <div class="flex bg-white rounded-lg border border-stone-200 p-1 gap-1">
                     <a href="{{ route('menu', ['category_id' => $selectedCategoryId]) }}"
-                       class="px-3 py-1.5 rounded-md text-sm font-medium transition-colors {{ !$currentSort ? 'bg-brand-500 text-white' : 'text-stone-600 hover:bg-stone-100' }}">
-                        Без сортировки
+                       class="px-2 sm:px-3 py-2 sm:py-1.5 rounded-md text-xs sm:text-sm font-medium transition-colors touch-manipulation min-h-[44px] sm:min-h-0 flex items-center justify-center {{ !$currentSort ? 'bg-brand-500 text-white' : 'text-stone-600 hover:bg-stone-100 active:bg-stone-200' }}">
+                        <span class="hidden sm:inline">Без сортировки</span>
+                        <span class="sm:hidden">Все</span>
                     </a>
                     <a href="{{ route('menu', ['category_id' => $selectedCategoryId, 'sort' => 'asc']) }}"
-                       class="px-3 py-1.5 rounded-md text-sm font-medium transition-colors flex items-center gap-1 {{ $currentSort === 'asc' ? 'bg-brand-500 text-white' : 'text-stone-600 hover:bg-stone-100' }}">
-                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                       class="px-2 sm:px-3 py-2 sm:py-1.5 rounded-md text-xs sm:text-sm font-medium transition-colors flex items-center justify-center gap-1 touch-manipulation min-h-[44px] sm:min-h-0 {{ $currentSort === 'asc' ? 'bg-brand-500 text-white' : 'text-stone-600 hover:bg-stone-100 active:bg-stone-200' }}">
+                        <svg class="w-3 h-3 sm:w-4 sm:h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4h13M3 8h9m-9 4h6m4 0l4-4m0 0l4 4m-4-4v12"/>
                         </svg>
-                        Дешевле
+                        <span class="hidden sm:inline">Дешевле</span>
+                        <span class="sm:hidden">↑</span>
                     </a>
                     <a href="{{ route('menu', ['category_id' => $selectedCategoryId, 'sort' => 'desc']) }}"
-                       class="px-3 py-1.5 rounded-md text-sm font-medium transition-colors flex items-center gap-1 {{ $currentSort === 'desc' ? 'bg-brand-500 text-white' : 'text-stone-600 hover:bg-stone-100' }}">
-                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                       class="px-2 sm:px-3 py-2 sm:py-1.5 rounded-md text-xs sm:text-sm font-medium transition-colors flex items-center justify-center gap-1 touch-manipulation min-h-[44px] sm:min-h-0 {{ $currentSort === 'desc' ? 'bg-brand-500 text-white' : 'text-stone-600 hover:bg-stone-100 active:bg-stone-200' }}">
+                        <svg class="w-3 h-3 sm:w-4 sm:h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4h13M3 8h9m-9 4h9m5-4v12m0 0l-4-4m4 4l4-4"/>
                         </svg>
-                        Дороже
+                        <span class="hidden sm:inline">Дороже</span>
+                        <span class="sm:hidden">↓</span>
                     </a>
                 </div>
             </div>
@@ -163,7 +117,7 @@
 
         <!-- Products Grid -->
         @if($products->count() > 0)
-        <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
             @foreach($products as $product)
             <article class="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 group"
                      x-data="{ productId: {{ $product->id }} }">
@@ -177,37 +131,37 @@
                         </span>
                     </div>
                 </div>
-                <div class="p-5">
-                    <h3 class="font-bold text-lg text-stone-900 mb-2">{{ $product->name }}</h3>
-                    <p class="text-stone-500 text-sm mb-4 line-clamp-2">{{ $product->description }}</p>
+                <div class="p-4 sm:p-5">
+                    <h3 class="font-bold text-base sm:text-lg text-stone-900 mb-2">{{ $product->name }}</h3>
+                    <p class="text-stone-500 text-xs sm:text-sm mb-3 sm:mb-4 line-clamp-2">{{ $product->description }}</p>
                     
-                    <div class="flex items-center justify-between">
-                        <span class="text-2xl font-bold text-brand-600">{{ number_format($product->price, 0, ',', ' ') }} ₽</span>
+                    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                        <span class="text-xl sm:text-2xl font-bold text-brand-600">{{ number_format($product->price, 0, ',', ' ') }} ₽</span>
                         
                         <!-- Add to cart controls -->
-                        <div x-show="!getCartItem(productId)" x-cloak>
+                        <div x-show="!getCartItem(productId)" x-cloak class="w-full sm:w-auto">
                             <button @click="addToCart({ id: {{ $product->id }}, name: '{{ $product->name }}', price: {{ $product->price }}, image: '{{ $product->image }}' })"
-                                    class="bg-brand-500 hover:bg-brand-600 text-white px-4 py-2 rounded-xl font-semibold transition-all hover:scale-105 active:scale-95 flex items-center gap-2">
+                                    class="w-full sm:w-auto bg-brand-500 hover:bg-brand-600 active:bg-brand-700 text-white px-4 sm:px-4 py-3 sm:py-2 rounded-xl font-semibold transition-all hover:scale-105 active:scale-95 flex items-center justify-center gap-2 min-h-[44px] touch-manipulation">
                                 <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
                                 </svg>
-                                В корзину
+                                <span>В корзину</span>
                             </button>
                         </div>
                         
                         <div x-show="getCartItem(productId)" x-cloak
-                             class="flex items-center gap-2 bg-stone-100 rounded-xl p-1">
+                             class="flex items-center justify-center sm:justify-start gap-2 bg-stone-100 rounded-xl p-1 w-full sm:w-auto">
                             <button @click="decrementQuantity(productId)"
-                                    class="w-8 h-8 flex items-center justify-center rounded-lg bg-white hover:bg-brand-50 text-brand-600 transition-colors">
-                                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    class="w-10 h-10 sm:w-8 sm:h-8 flex items-center justify-center rounded-lg bg-white hover:bg-brand-50 active:bg-brand-100 text-brand-600 transition-colors touch-manipulation min-w-[44px] min-h-[44px] sm:min-w-[32px] sm:min-h-[32px]">
+                                <svg class="w-5 h-5 sm:w-4 sm:h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4"/>
                                 </svg>
                             </button>
-                            <span class="w-8 text-center font-bold text-stone-900" 
+                            <span class="w-10 sm:w-8 text-center font-bold text-stone-900 text-base sm:text-sm" 
                                   x-text="getCartItem(productId)?.quantity || 0"></span>
                             <button @click="incrementQuantity(productId)"
-                                    class="w-8 h-8 flex items-center justify-center rounded-lg bg-white hover:bg-brand-50 text-brand-600 transition-colors">
-                                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    class="w-10 h-10 sm:w-8 sm:h-8 flex items-center justify-center rounded-lg bg-white hover:bg-brand-50 active:bg-brand-100 text-brand-600 transition-colors touch-manipulation min-w-[44px] min-h-[44px] sm:min-w-[32px] sm:min-h-[32px]">
+                                <svg class="w-5 h-5 sm:w-4 sm:h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
                                 </svg>
                             </button>
@@ -276,35 +230,32 @@
             <p class="text-stone-500">В этой категории пока нет блюд</p>
         </div>
         @endif
-
     </main>
+@endsection
 
-    <!-- Footer -->
-    <footer class="bg-stone-900 text-white mt-16">
+
+@section('footer')
+<footer class="bg-stone-900 text-white mt-16">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
             <div class="flex flex-col md:flex-row items-center justify-between gap-6">
-                <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 bg-brand-500 rounded-xl flex items-center justify-center">
-                        <svg class="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
-                        </svg>
-                    </div>
-                    <span class="text-xl font-bold">Barakad</span>
-                </div>
-                <p class="text-stone-400 text-sm">© 2026 Barakad. Все права защищены.</p>
+                <p class="text-stone-200 text-sm">
+                    © <span id="hijri-year"></span> (@php echo date('Y'); @endphp) Barakad. Все права защищены.</p>
+                    <script>
+                        const hijriYear = new Intl.DateTimeFormat('en-u-ca-islamic-umalqura', { year: 'numeric' }).format(Date.now());
+                        document.getElementById('hijri-year').textContent = Number.parseInt(hijriYear);
+                    </script>
             </div>
         </div>
     </footer>
-
     <!-- Toast Notification -->
     <div x-show="showToast" x-cloak
-         x-transition:enter="transition ease-out duration-300"
+    x-transition:enter="transition ease-out duration-300"
          x-transition:enter-start="opacity-0 translate-y-4"
          x-transition:enter-end="opacity-100 translate-y-0"
          x-transition:leave="transition ease-in duration-200"
          x-transition:leave-start="opacity-100 translate-y-0"
          x-transition:leave-end="opacity-0 translate-y-4"
-         class="fixed bottom-6 right-6 bg-stone-900 text-white px-6 py-4 rounded-2xl shadow-2xl flex items-center gap-3 z-50">
+         class="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 bg-stone-900 text-white px-4 py-3 sm:px-6 sm:py-4 rounded-2xl shadow-2xl flex items-center gap-2 sm:gap-3 z-50 max-w-[calc(100vw-2rem)] sm:max-w-none">
         <div class="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center flex-shrink-0">
             <svg class="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
@@ -312,7 +263,9 @@
         </div>
         <span x-text="toastMessage" class="font-medium"></span>
     </div>
+@endsection
 
+@push('footer-scripts')
 <script>
 // Save table number from QR code URL
 (function() {
@@ -400,5 +353,4 @@ function cartApp() {
     }
 }
 </script>
-</body>
-</html>
+@endpush

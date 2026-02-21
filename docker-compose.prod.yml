@@ -1,0 +1,28 @@
+services:
+  barakad:
+    build:
+      target: production
+    # Remove ports - nginx will handle external access
+    # php-fpm communicates via socket/network, not HTTP port
+    expose:
+      - "9000"
+    networks:
+      - barakad-network
+    env_file:
+      - .env
+
+  barakad-nginx:
+    image: nginx:alpine
+    container_name: barakad-nginx
+    tty: true
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
+      - .:/var/www/html
+    depends_on:
+      - barakad
+    networks:
+      - barakad-network
+    restart: unless-stopped
