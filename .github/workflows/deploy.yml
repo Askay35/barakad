@@ -96,6 +96,13 @@ jobs:
           echo "Checking PHP-FPM connection..."
           ssh $SERVER_USER@$SERVER_HOST "cd $SERVER_PATH && docker-compose -f docker-compose.yml -f docker-compose.prod.yml exec -T barakad sh -c 'nc -zv localhost 9000 && echo \"PHP-FPM is listening\"' || echo \"PHP-FPM check skipped\""
           echo "Testing HTTP endpoint..."
-          curl -f --max-time 30 http://$SERVER_HOST || (echo "Health check failed. Checking logs..." && ssh $SERVER_USER@$SERVER_HOST "cd $SERVER_PATH && docker-compose -f docker-compose.yml -f docker-compose.prod.yml logs --tail=50 barakad barakad-nginx" && exit 1)
+          HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" --max-time 30 http://$SERVER_HOST) || HTTP_CODE="000"
+          if [ "$HTTP_CODE" != "200" ] && [ "$HTTP_CODE" != "302" ] && [ "$HTTP_CODE" != "301" ]; then
+            echo "Health check failed. HTTP status: $HTTP_CODE"
+            echo "Checking logs..."
+            ssh $SERVER_USER@$SERVER_HOST "cd $SERVER_PATH && docker-compose -f docker-compose.yml -f docker-compose.prod.yml logs --tail=50 barakad barakad-nginx"
+            exit 1
+          fi
+          echo "HTTP endpoint responded with status: $HTTP_CODE"
           echo "Deployment successful!"
 

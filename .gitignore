@@ -9,6 +9,9 @@
 /storage/*.key
 /storage/app/*
 !/storage/app/.gitkeep
+!/storage/app/public
+!/storage/app/public/images
+!/storage/app/public/images/logo.png
 /storage/framework/cache/*
 !/storage/framework/cache/.gitkeep
 /storage/framework/sessions/*
