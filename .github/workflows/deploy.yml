@@ -67,9 +67,19 @@ jobs:
             docker-compose -f docker-compose.yml -f docker-compose.prod.yml pull barakad-nginx 2>/dev/null || true && \
             docker-compose -f docker-compose.yml -f docker-compose.prod.yml build barakad && \
             docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d && \
-            echo 'Waiting for containers to be healthy...' && \
-            sleep 15 && \
+            echo 'Waiting for containers to start...' && \
+            sleep 10 && \
             docker-compose -f docker-compose.yml -f docker-compose.prod.yml ps && \
+            echo 'Checking if barakad container is running...' && \
+            BARAKAD_STATUS=\$(docker-compose -f docker-compose.yml -f docker-compose.prod.yml ps barakad | grep -c 'Up' || echo '0') && \
+            if [ \"\$BARAKAD_STATUS\" = \"0\" ]; then \
+              echo 'ERROR: barakad container is not running!' && \
+              echo 'Container logs:' && \
+              docker-compose -f docker-compose.yml -f docker-compose.prod.yml logs --tail=100 barakad && \
+              exit 1; \
+            fi && \
+            echo 'Waiting for PHP-FPM to be ready...' && \
+            sleep 10 && \
             docker-compose -f docker-compose.yml -f docker-compose.prod.yml exec -T barakad php artisan migrate --force 2>/dev/null || true && \
             docker-compose -f docker-compose.yml -f docker-compose.prod.yml exec -T barakad php artisan storage:link 2>/dev/null || true"
       
