@@ -69,10 +69,32 @@
         }
     </style>
 </head>
-<body class="bg-stone-50 font-sans antialiased" x-data="cartApp()">
+<body class="bg-stone-50 font-sans antialiased min-h-screen flex flex-col" x-data="cartApp()">
     @yield('header')
     @yield('content')
     @yield('footer')
+    
+    <!-- Footer -->
+    <footer class="bg-stone-900 text-white mt-auto">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <div class="flex flex-col md:flex-row items-center justify-between gap-4">
+                <p class="text-stone-200 text-sm">
+                    © <span id="hijri-year"></span> (@php echo date('Y'); @endphp) Barakad. Все права защищены.</p>
+                    <script>
+                        const hijriYear = new Intl.DateTimeFormat('en-u-ca-islamic-umalqura', { year: 'numeric' }).format(Date.now());
+                        document.getElementById('hijri-year').textContent = Number.parseInt(hijriYear);
+                    </script>
+                <div class="flex flex-col md:flex-row items-center gap-2 md:gap-4 text-sm text-white">
+                    <span>Адрес: г. Владикавказ, ул. Нальчикская 4</span>
+                    <span class="hidden md:inline">•</span>
+                    <span>ИНН: 150801082507</span>
+                    <span class="hidden md:inline">•</span>
+                    <span>ОГРН: 325150000046942</span>
+                </div>
+            </div>
+        </div>
+    </footer>
+    
     @stack('footer-scripts')
 </body>
 </html>
