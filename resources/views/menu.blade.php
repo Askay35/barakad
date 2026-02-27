@@ -11,13 +11,18 @@
                     <img src="{{ asset('storage/images/logo.png') }}" alt="Barakad" class="h-10 sm:h-16 w-auto">
                 </a>
                 
-                <!-- Table Badge -->
-                <span x-show="tableNumber" x-cloak class="hidden sm:flex px-2 sm:px-3 py-1 sm:py-1.5 bg-brand-50 text-brand-700 rounded-full text-xs sm:text-sm font-semibold items-center gap-1 sm:gap-1.5 flex-shrink-0">
-                    <svg class="w-3 h-3 sm:w-4 sm:h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M3 14h18m-9-4v8m-7 0h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/>
-                    </svg>
-                    <span class="hidden md:inline">Стол</span> <span x-text="tableNumber"></span>
-                </span>
+                <!-- Table Badge / Select Button -->
+                <div class="flex items-center gap-2">
+                    <button @click="showTableModal = true" 
+                            class="flex items-center gap-1 sm:gap-1.5 px-2 sm:px-3 py-1 sm:py-1.5 rounded-full text-xs sm:text-sm font-semibold transition-colors touch-manipulation min-h-[44px] sm:min-h-0"
+                            :class="tableId ? 'bg-brand-50 text-brand-700' : 'bg-stone-100 text-stone-600 hover:bg-stone-200'">
+                        <svg class="w-3 h-3 sm:w-4 sm:h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M3 14h18m-9-4v8m-7 0h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+                        </svg>
+                        <span class="hidden md:inline" x-text="tableId ? 'Стол #' + tableNumber : 'Выбрать стол'"></span>
+                        <span class="md:hidden" x-text="tableId ? '#' + tableNumber : 'Стол'"></span>
+                    </button>
+                </div>
 
                 <!-- Cart Button -->
                 <a href="{{ route('cart') }}" 
@@ -231,6 +236,61 @@
         </div>
         @endif
     </main>
+
+    <!-- Table Selection Modal -->
+    <div x-show="showTableModal" x-cloak
+         @click.self="showTableModal = false"
+         class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm"
+         x-transition:enter="transition ease-out duration-300"
+         x-transition:enter-start="opacity-0"
+         x-transition:enter-end="opacity-100"
+         x-transition:leave="transition ease-in duration-200"
+         x-transition:leave-start="opacity-100"
+         x-transition:leave-end="opacity-0">
+        <div class="bg-white rounded-2xl sm:rounded-3xl p-6 sm:p-8 max-w-2xl w-full shadow-2xl mx-4 max-h-[90vh] overflow-y-auto"
+             @click.stop
+             x-transition:enter="transition ease-out duration-300"
+             x-transition:enter-start="opacity-0 scale-95"
+             x-transition:enter-end="opacity-100 scale-100">
+            <div class="flex items-center justify-between mb-6">
+                <h2 class="text-xl sm:text-2xl font-bold text-stone-900">Выберите стол</h2>
+                <button @click="showTableModal = false" class="text-stone-400 hover:text-stone-600 transition-colors">
+                    <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                </button>
+            </div>
+            
+            <div class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-3 sm:gap-4">
+                @foreach($tables as $table)
+                <button @if($table->is_enabled) @click="selectTable({{ $table->id }}, {{ $table->number }})" @endif
+                        :class="tableId == {{ $table->id }} ? 'bg-brand-500 text-white ring-2 ring-brand-500 ring-offset-2 border-brand-500' : '{{ $table->is_enabled ? 'bg-white text-stone-700 hover:bg-brand-50 hover:border-brand-500 border-stone-200' : 'bg-stone-100 text-stone-400 cursor-not-allowed opacity-60 border-stone-200' }}'"
+                        class="relative aspect-square rounded-xl border-2 transition-all duration-200 flex flex-col items-center justify-center gap-2 p-3 touch-manipulation min-h-[80px] sm:min-h-0"
+                        @if(!$table->is_enabled) disabled @endif>
+                    <svg class="w-6 h-6 sm:w-8 sm:h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M3 14h18m-9-4v8m-7 0h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+                    </svg>
+                    <span class="font-bold text-sm sm:text-base">#{{ $table->number }}</span>
+                    @if(!$table->is_enabled)
+                    <span class="absolute top-1 right-1 text-xs bg-red-500 text-white px-1.5 py-0.5 rounded">Отключен</span>
+                    @endif
+                </button>
+                @endforeach
+            </div>
+            
+            <div class="mt-6 flex gap-3">
+                <button @click="clearTable()" 
+                        x-show="tableId"
+                        class="flex-1 px-4 py-2.5 bg-stone-100 hover:bg-stone-200 text-stone-700 font-medium rounded-xl transition-colors text-sm">
+                    Убрать стол
+                </button>
+                <button @click="showTableModal = false" 
+                        class="flex-1 px-4 py-2.5 bg-brand-500 hover:bg-brand-600 text-white font-medium rounded-xl transition-colors text-sm">
+                    Готово
+                </button>
+            </div>
+        </div>
+    </div>
 @endsection
 
 
@@ -254,18 +314,27 @@
 
 @push('footer-scripts')
 <script>
-// Save table number from QR code URL
+// Save table number from QR code URL (legacy support)
 (function() {
     const params = new URLSearchParams(window.location.search);
     if (params.has('table')) {
-        localStorage.setItem('barakad_table', params.get('table'));
+        const tableNumber = params.get('table');
+        // Try to find table by number
+        const tables = @json($tables);
+        const table = tables.find(t => t.number == tableNumber);
+        if (table && table.is_enabled) {
+            localStorage.setItem('barakad_table_id', table.id);
+            localStorage.setItem('barakad_table_number', table.number);
+        }
     }
 })();
 
 function cartApp() {
     return {
         cart: JSON.parse(localStorage.getItem('barakad_cart') || '[]'),
-        tableNumber: localStorage.getItem('barakad_table'),
+        tableId: localStorage.getItem('barakad_table_id') ? parseInt(localStorage.getItem('barakad_table_id')) : null,
+        tableNumber: localStorage.getItem('barakad_table_number') || null,
+        showTableModal: false,
         showToast: false,
         toastMessage: '',
         
@@ -336,6 +405,24 @@ function cartApp() {
             setTimeout(() => {
                 this.showToast = false;
             }, 2000);
+        },
+        
+        selectTable(tableId, tableNumber) {
+            this.tableId = tableId;
+            this.tableNumber = tableNumber;
+            localStorage.setItem('barakad_table_id', tableId);
+            localStorage.setItem('barakad_table_number', tableNumber);
+            this.showTableModal = false;
+            this.showNotification('Стол #' + tableNumber + ' выбран');
+        },
+        
+        clearTable() {
+            this.tableId = null;
+            this.tableNumber = null;
+            localStorage.removeItem('barakad_table_id');
+            localStorage.removeItem('barakad_table_number');
+            this.showTableModal = false;
+            this.showNotification('Стол убран');
         }
     }
 }

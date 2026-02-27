@@ -25,7 +25,7 @@ class OrderController extends Controller
             'items.*.price' => 'required|numeric|min:0',
             'payment_type_id' => 'required|exists:payment_types,id',
             'comment' => 'nullable|string|max:1000',
-            'table' => 'nullable|integer|min:1',
+            'table_id' => 'nullable|exists:tables,id',
         ]);
 
         $totalCost = collect($validated['items'])->sum(fn($item) => $item['price'] * $item['quantity']);
@@ -34,7 +34,7 @@ class OrderController extends Controller
             $order = Order::create([
                 'cost' => $totalCost,
                 'comment' => $validated['comment'] ?? null,
-                'table' => $validated['table'] ?? null,
+                'table_id' => $validated['table_id'] ?? null,
                 'payment_type_id' => $validated['payment_type_id'],
                 'status_id' => 1, // Текущий
             ]);

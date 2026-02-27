@@ -9,7 +9,7 @@ class Order extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['table', 'cost', 'comment', 'status_id', 'payment_type_id'];
+    protected $fillable = ['table_id', 'cost', 'comment', 'status_id', 'payment_type_id'];
 
     public function status()
     {
@@ -19,6 +19,11 @@ class Order extends Model
     public function paymentType()
     {
         return $this->belongsTo(PaymentType::class, 'payment_type_id');
+    }
+
+    public function table()
+    {
+        return $this->belongsTo(Table::class);
     }
 
     public function orderItems()

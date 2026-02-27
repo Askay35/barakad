@@ -3,6 +3,7 @@
 use App\Http\Controllers\Admin\AdminCategoryController;
 use App\Http\Controllers\Admin\AdminOrderController;
 use App\Http\Controllers\Admin\AdminProductController;
+use App\Http\Controllers\Admin\AdminTableController;
 use App\Http\Controllers\Admin\AuthController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\MenuController;
@@ -42,4 +43,10 @@ Route::middleware('auth')->prefix('admin')->name('admin.')->group(function () {
     Route::post('/categories', [AdminCategoryController::class, 'store'])->name('categories.store');
     Route::put('/categories/{category}', [AdminCategoryController::class, 'update'])->name('categories.update');
     Route::delete('/categories/{category}', [AdminCategoryController::class, 'destroy'])->name('categories.destroy');
+
+    Route::get('/tables', [AdminTableController::class, 'index'])->name('tables');
+    Route::post('/tables', [AdminTableController::class, 'store'])->name('tables.store');
+    Route::put('/tables/{table}', [AdminTableController::class, 'update'])->name('tables.update');
+    Route::post('/tables/{table}/toggle', [AdminTableController::class, 'toggleStatus'])->name('tables.toggle');
+    Route::delete('/tables/{table}', [AdminTableController::class, 'destroy'])->name('tables.destroy');
 });

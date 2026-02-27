@@ -265,7 +265,8 @@
 function cartApp() {
     return {
         cart: JSON.parse(localStorage.getItem('barakad_cart') || '[]'),
-        tableNumber: localStorage.getItem('barakad_table'),
+        tableId: localStorage.getItem('barakad_table_id') ? parseInt(localStorage.getItem('barakad_table_id')) : null,
+        tableNumber: localStorage.getItem('barakad_table_number') || null,
         paymentTypeId: null,
         comment: '',
         isSubmitting: false,
@@ -345,7 +346,7 @@ function cartApp() {
                         items: this.cart,
                         payment_type_id: this.paymentTypeId,
                         comment: this.comment,
-                        table: this.tableNumber ? parseInt(this.tableNumber) : null,
+                        table_id: this.tableId,
                     }),
                 });
                 

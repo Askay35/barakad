@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Resources\ProductResource;
 use App\Models\Category;
 use App\Models\Product;
+use App\Models\Table;
 use Illuminate\Http\Request;
 
 class MenuController extends Controller
@@ -12,6 +13,7 @@ class MenuController extends Controller
     public function __invoke(Request $request)
     {
         $categories = Category::all();
+        $tables = Table::orderBy('number')->get();
         $selectedCategoryId = $request->integer('category_id') ?: null;
         $sort = $request->input('sort');
         
@@ -29,6 +31,7 @@ class MenuController extends Controller
 
         return view('menu', [
             'categories' => $categories,
+            'tables' => $tables,
             'products' => $products,
             'selectedCategoryId' => $selectedCategoryId,
             'currentSort' => $sort,
