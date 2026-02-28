@@ -159,6 +159,20 @@
                     </div>
                 </div>
                 
+                <!-- Phone -->
+                <div class="mb-4 sm:mb-6">
+                    <label for="phone" class="block text-xs sm:text-sm font-semibold text-stone-700 mb-2">Номер телефона <span class="text-red-500">*</span></label>
+                    <input type="tel" 
+                           id="phone"
+                           x-model="phone"
+                           @input="phone = formatPhone($event.target.value)"
+                           @keydown="handlePhoneKeydown($event)"
+                           required
+                           placeholder="+7 (999) 123-45-67"
+                           maxlength="18"
+                           class="w-full px-3 sm:px-4 py-2 sm:py-3 rounded-xl border border-stone-200 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 outline-none transition-all text-stone-900 placeholder-stone-400 text-sm sm:text-base">
+                </div>
+                
                 <!-- Comment -->
                 <div class="mb-4 sm:mb-6">
                     <label for="comment" class="block text-xs sm:text-sm font-semibold text-stone-700 mb-2">Комментарий к заказу</label>
@@ -187,8 +201,8 @@
                 
                 <!-- Submit Button -->
                 <button @click="submitOrder()"
-                        :disabled="isSubmitting || !paymentTypeId"
-                        :class="isSubmitting || !paymentTypeId ? 'bg-stone-300 cursor-not-allowed' : 'bg-brand-500 hover:bg-brand-600 active:bg-brand-700 hover:scale-[1.02] active:scale-[0.98]'"
+                        :disabled="isSubmitting || !paymentTypeId || !isPhoneValid"
+                        :class="isSubmitting || !paymentTypeId || !isPhoneValid ? 'bg-stone-300 cursor-not-allowed' : 'bg-brand-500 hover:bg-brand-600 active:bg-brand-700 hover:scale-[1.02] active:scale-[0.98]'"
                         class="w-full text-white py-3 sm:py-4 rounded-xl font-bold text-base sm:text-lg transition-all flex items-center justify-center gap-2 touch-manipulation min-h-[44px] sm:min-h-0">
                     <template x-if="!isSubmitting">
                         <span class="flex items-center gap-2">
@@ -268,6 +282,7 @@ function cartApp() {
         tableId: localStorage.getItem('barakad_table_id') ? parseInt(localStorage.getItem('barakad_table_id')) : null,
         tableNumber: localStorage.getItem('barakad_table_number') || null,
         paymentTypeId: null,
+        phone: '',
         comment: '',
         isSubmitting: false,
         showSuccess: false,
@@ -281,6 +296,12 @@ function cartApp() {
         
         get cartCount() {
             return this.cart.reduce((sum, item) => sum + item.quantity, 0);
+        },
+        
+        get isPhoneValid() {
+            if (!this.phone) return false;
+            const phoneDigits = this.phone.replace(/\D/g, '');
+            return phoneDigits.length === 11 && phoneDigits.startsWith('7');
         },
         
         incrementQuantity(index) {
@@ -321,9 +342,75 @@ function cartApp() {
             }).format(price);
         },
         
+        formatPhone(value) {
+            if (!value) return '';
+            
+            // Удаляем все символы кроме цифр
+            let digits = value.replace(/\D/g, '');
+            
+            // Если пусто, возвращаем пустую строку
+            if (digits.length === 0) {
+                return '';
+            }
+            
+            // Если начинается с 8, заменяем на 7
+            if (digits.startsWith('8')) {
+                digits = '7' + digits.substring(1);
+            }
+            
+            // Если не начинается с 7, добавляем 7 в начало
+            if (!digits.startsWith('7')) {
+                digits = '7' + digits;
+            }
+            
+            // Ограничиваем до 11 цифр (7 + 10 цифр номера)
+            if (digits.length > 11) {
+                digits = digits.substring(0, 11);
+            }
+            
+            // Убираем первую 7 для форматирования (она будет в +7)
+            const phoneDigits = digits.substring(1);
+            
+            // Форматируем: +7 (XXX) XXX-XX-XX
+            if (phoneDigits.length === 0) {
+                return '+7';
+            } else if (phoneDigits.length <= 3) {
+                return `+7 (${phoneDigits}`;
+            } else if (phoneDigits.length <= 6) {
+                return `+7 (${phoneDigits.substring(0, 3)}) ${phoneDigits.substring(3)}`;
+            } else if (phoneDigits.length <= 8) {
+                return `+7 (${phoneDigits.substring(0, 3)}) ${phoneDigits.substring(3, 6)}-${phoneDigits.substring(6)}`;
+            } else {
+                return `+7 (${phoneDigits.substring(0, 3)}) ${phoneDigits.substring(3, 6)}-${phoneDigits.substring(6, 8)}-${phoneDigits.substring(8, 10)}`;
+            }
+        },
+        
+        handlePhoneKeydown(event) {
+            // Разрешаем: Backspace, Delete, Tab, Escape, Enter, стрелки
+            if ([8, 9, 27, 13, 46, 35, 36, 37, 38, 39, 40].indexOf(event.keyCode) !== -1 ||
+                // Разрешаем: Ctrl+A, Ctrl+C, Ctrl+V, Ctrl+X
+                (event.keyCode === 65 && event.ctrlKey === true) ||
+                (event.keyCode === 67 && event.ctrlKey === true) ||
+                (event.keyCode === 86 && event.ctrlKey === true) ||
+                (event.keyCode === 88 && event.ctrlKey === true)) {
+                return;
+            }
+            // Блокируем все остальное, если это не цифра и не +
+            if ((event.shiftKey || (event.keyCode < 48 || event.keyCode > 57)) && (event.keyCode < 96 || event.keyCode > 105) && event.keyCode !== 187) {
+                event.preventDefault();
+            }
+        },
+        
         async submitOrder() {
             if (!this.paymentTypeId) {
                 this.showErrorMessage('Выберите способ оплаты');
+                return;
+            }
+            
+            // Проверяем, что телефон заполнен (минимум +7 и 10 цифр)
+            const phoneDigits = this.phone.replace(/\D/g, '');
+            if (!this.phone || phoneDigits.length < 11) {
+                this.showErrorMessage('Укажите корректный номер телефона');
                 return;
             }
             
@@ -345,6 +432,7 @@ function cartApp() {
                     body: JSON.stringify({
                         items: this.cart,
                         payment_type_id: this.paymentTypeId,
+                        phone: this.phone.replace(/\D/g, '').replace(/^7/, '+7'),
                         comment: this.comment,
                         table_id: this.tableId,
                     }),
@@ -358,6 +446,7 @@ function cartApp() {
                     this.cart = [];
                     this.saveCart();
                     this.comment = '';
+                    this.phone = '';
                     this.paymentTypeId = null;
                 } else {
                     this.showErrorMessage(data.message || 'Произошла ошибка при оформлении заказа');

@@ -24,6 +24,7 @@ class OrderController extends Controller
             'items.*.quantity' => 'required|integer|min:1',
             'items.*.price' => 'required|numeric|min:0',
             'payment_type_id' => 'required|exists:payment_types,id',
+            'phone' => 'required|string|max:20',
             'comment' => 'nullable|string|max:1000',
             'table_id' => 'nullable|exists:tables,id',
         ]);
@@ -33,6 +34,7 @@ class OrderController extends Controller
         $order = DB::transaction(function () use ($validated, $totalCost) {
             $order = Order::create([
                 'cost' => $totalCost,
+                'phone' => $validated['phone'],
                 'comment' => $validated['comment'] ?? null,
                 'table_id' => $validated['table_id'] ?? null,
                 'payment_type_id' => $validated['payment_type_id'],

@@ -16,9 +16,9 @@
                     <button @click="showTableModal = true" 
                             class="flex items-center gap-1 sm:gap-1.5 px-2 sm:px-3 py-1 sm:py-1.5 rounded-full text-xs sm:text-sm font-semibold transition-colors touch-manipulation min-h-[44px] sm:min-h-0"
                             :class="tableId ? 'bg-brand-50 text-brand-700' : 'bg-stone-100 text-stone-600 hover:bg-stone-200'">
-                        <svg class="w-3 h-3 sm:w-4 sm:h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M3 14h18m-9-4v8m-7 0h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/>
-                        </svg>
+                    <svg class="w-3 h-3 sm:w-4 sm:h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M3 14h18m-9-4v8m-7 0h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+                    </svg>
                         <span class="hidden md:inline" x-text="tableId ? 'Стол #' + tableNumber : 'Выбрать стол'"></span>
                         <span class="md:hidden" x-text="tableId ? '#' + tableNumber : 'Стол'"></span>
                     </button>
