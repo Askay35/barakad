@@ -18,5 +18,8 @@ class PaymentTypes extends Seeder
         PaymentType::create([
             'name' => 'Карта',
         ]);
+        PaymentType::create([
+            'name' => 'Онлайн оплата',
+        ]);
     }
 }

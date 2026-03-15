@@ -133,9 +133,9 @@
                 <!-- Payment Type -->
                 <div class="mb-4 sm:mb-6">
                     <label class="block text-xs sm:text-sm font-semibold text-stone-700 mb-2 sm:mb-3">Способ оплаты</label>
-                    <div class="grid grid-cols-2 gap-2 sm:gap-3">
+                    <div class="flex flex-wrap gap-2">
                         @foreach($paymentTypes as $paymentType)
-                        <label class="relative cursor-pointer">
+                        <label class="relative cursor-pointer flex-1">
                             <input type="radio" 
                                    name="payment_type" 
                                    value="{{ $paymentType->id }}"
@@ -147,10 +147,21 @@
                                 <svg class="w-5 h-5 text-stone-600 peer-checked:text-brand-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"/>
                                 </svg>
-                                @else
+                                @elseif ($paymentType->name === 'Карта')
                                 <svg class="w-5 h-5 text-stone-600 peer-checked:text-brand-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/>
                                 </svg>
+                                @else
+                                <svg width="97" height="120" class="w-5 h-5" viewBox="0 0 97 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M0 26.12l14.532 25.975v15.844L.017 93.863 0 26.12z" fill="#5B57A2"/>
+                                    <path d="M55.797 42.643l13.617-8.346 27.868-.026-41.485 25.414V42.643z" fill="#D90751"/>
+                                    <path d="M55.72 25.967l.077 34.39-14.566-8.95V0l14.49 25.967z" fill="#FAB718"/>
+                                    <path d="M97.282 34.271l-27.869.026-13.693-8.33L41.231 0l56.05 34.271z" fill="#ED6F26"/>
+                                    <path d="M55.797 94.007V77.322l-14.566-8.78.008 51.458 14.558-25.993z" fill="#63B22F"/>
+                                    <path d="M69.38 85.737L14.531 52.095 0 26.12l97.223 59.583-27.844.034z" fill="#1487C9"/>
+                                    <path d="M41.24 120l14.556-25.993 13.583-8.27 27.843-.034L41.24 120z" fill="#017F36"/>
+                                    <path d="M.017 93.863l41.333-25.32-13.896-8.526-12.922 7.922L.017 93.863z" fill="#984995"/>
+                                    </svg>
                                 @endif
                                 <span class="font-medium text-stone-700 text-xs sm:text-sm">{{ $paymentType->name }}</span>
                             </div>
