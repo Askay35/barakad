@@ -6,9 +6,19 @@ RUN apk add --no-cache \
     mysql-client \
     linux-headers \
     netcat-openbsd \
+    libpng-dev \
+    libjpeg-turbo-dev \
+    freetype-dev \
     $PHPIZE_DEPS \
-    && docker-php-ext-install pdo pdo_mysql \
+    && docker-php-ext-configure gd --with-freetype --with-jpeg \
+    && docker-php-ext-install pdo pdo_mysql gd \
     && apk del $PHPIZE_DEPS
+
+RUN { \
+    echo "upload_max_filesize=32M"; \
+    echo "post_max_size=32M"; \
+    echo "memory_limit=256M"; \
+  } > /usr/local/etc/php/conf.d/uploads.ini
 
 RUN php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" \
     && php composer-setup.php --install-dir=/usr/local/bin --filename=composer \

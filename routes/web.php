@@ -41,6 +41,11 @@ Route::middleware('auth')->prefix('admin')->name('admin.')->group(function () {
 
     Route::get('/categories', [AdminCategoryController::class, 'index'])->name('categories');
     Route::post('/categories', [AdminCategoryController::class, 'store'])->name('categories.store');
+    // При ошибке валидации для обновления категория перенаправляется на /admin/categories/{category} (GET),
+    // поэтому добавляем маршрут, который просто возвращает список категорий.
+    Route::get('/categories/{category}', function () {
+        return redirect()->route('admin.categories');
+    })->name('categories.show');
     Route::put('/categories/{category}', [AdminCategoryController::class, 'update'])->name('categories.update');
     Route::delete('/categories/{category}', [AdminCategoryController::class, 'destroy'])->name('categories.destroy');
 
